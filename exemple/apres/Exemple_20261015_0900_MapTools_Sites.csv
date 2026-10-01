@@ -1,0 +1,8 @@
+﻿"Url";"Titre";"Modele";"PartageExterne";"ValeurBrute";"GroupeM365";"Proprietaire";"DerniereModification";"StockageMo";"ExpirationLiensAnonymesJours";"LienParDefaut"
+"Tenant";"Paramètre du tenant";"Tenant";"Tout le monde (liens anonymes)";"ExternalUserAndGuestSharing";"";"";"";"";"30";"AnonymousAccess"
+"https://contoso.sharepoint.com/sites/Finance";"Finance";"GROUP#0";"Tout le monde (liens anonymes)";"ExternalUserAndGuestSharing";"g-fin";"emma.pittet@contoso.ch";"2026-08-29";"5320";"";""
+"https://contoso.sharepoint.com/sites/Direction";"Direction";"GROUP#0";"Nouveaux et existants invités";"ExternalUserSharingOnly";"g-dir";"mro-a2@contoso.ch";"2026-08-20";"2210";"";""
+"https://contoso.sharepoint.com/sites/Projet Migration 2026";"Projet Migration 2026";"GROUP#0";"Nouveaux et existants invités";"ExternalUserSharingOnly";"g-pm";"lea.partie@contoso.ch";"2026-07-02";"830";"";""
+"https://contoso.sharepoint.com/sites/RH";"RH";"STS#3";"Désactivé (interne uniquement)";"Disabled";"";"marie.dupont@contoso.ch";"2026-08-30";"1900";"";""
+"https://contoso.sharepoint.com/sites/IT";"IT";"GROUP#0";"Invités existants uniquement";"ExistingExternalUserSharingOnly";"g-it";"mro-a2@contoso.ch";"2026-08-31";"4100";"";""
+"https://contoso.sharepoint.com/sites/Commun";"Commun";"STS#3";"Invités existants uniquement";"ExistingExternalUserSharingOnly";"";"mro-a2@contoso.ch";"2026-08-31";"12040";"";""

@@ -1,0 +1,10 @@
+# Données clients : ne jamais versionner les exports ni les profils
+*.csv
+!exemple/**/*.csv
+MapTools_Profil_*.json
+*.pdf
+*.png
+# Fichiers de travail
+dev/out/
+_test*.html
+__pycache__/

@@ -1,0 +1,46 @@
+MapTools 1.1 - Conditions d'utilisation
+=======================================
+
+Copyright (c) 2026 Jimmy Paul. Tous droits réservés.
+
+MapTools (le fichier MapTools.html, les scripts du dossier scripts\, la
+documentation et les fichiers d'exemple) est l'œuvre de Jimmy Paul.
+
+1. Utilisation
+   L'utilisation de MapTools est autorisée, à titre gratuit, pour un usage
+   interne ou dans le cadre de prestations réalisées pour des clients.
+
+2. Mention d'auteur
+   Les mentions d'auteur et de copyright ne doivent être ni supprimées, ni
+   modifiées, ni masquées : en-tête de l'outil, section « À propos » de
+   l'aide, exports PNG, aide intégrée des scripts, documentation et présent
+   fichier.
+
+3. Adaptation
+   Les réglages documentés dans docs\REFERENCE.md (constantes de la section
+   « Configuration » de MapTools.html, variable $ReglesProfil des scripts,
+   paramètres des scripts) peuvent être adaptés pour un usage propre.
+   Toute autre modification, ainsi que la diffusion d'une version modifiée ou
+   renommée, nécessite l'accord écrit préalable de l'auteur.
+
+4. Diffusion
+   MapTools ne peut être transmis qu'en paquet complet et non modifié,
+   accompagné du présent fichier. L'intégrité du paquet peut être vérifiée
+   avec SHA256SUMS.txt.
+
+5. Absence de garantie
+   MapTools est fourni « en l'état », sans garantie d'aucune sorte. L'auteur
+   ne peut être tenu responsable des conséquences de son utilisation. Les
+   scripts effectuent uniquement des lectures ; l'utilisateur reste
+   responsable des décisions prises sur la base des résultats.
+
+6. Données
+   MapTools ne transmet aucune donnée. Les exports produits contiennent des
+   données personnelles dont le traitement relève de la responsabilité de
+   l'utilisateur et de son client (nLPD, RGPD).
+
+7. Composants tiers
+   vis-network 9.1.9 (Apache-2.0 / MIT) et PapaParse 5.4.1 (MIT) restent
+   soumis à leurs propres licences, fournies dans le dossier lib\.
+
+Contact : Jimmy Paul
