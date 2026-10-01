@@ -30,6 +30,12 @@ try:
         ok('Carte affichée', nb() > 20, nb())
         for v in ['structure', 'todo', 'off', 'roles', 'mfa', 'guests', 'extshare', 'lic', 'svc', 'admins', 'noowner', 'loops', 'iso']:
             pg.select_option('#preset', v); pg.wait_for_timeout(500); ok(f'Vue rapide {v}', nb() > 0, nb())
+        # Les réglages secondaires ne doivent pas annuler la vue rapide
+        pg.select_option('#preset', 'mfa'); pg.wait_for_timeout(600); base = nb()
+        pg.click('#lFree'); pg.wait_for_timeout(1200); pg.click('#spaceSeg button[data-v="compact"]'); pg.wait_for_timeout(900)
+        b = pg.query_selector('#legend button[data-cat]'); b.click(); pg.wait_for_timeout(400); b.click(); pg.wait_for_timeout(400)
+        pg.click('#lHier'); pg.wait_for_timeout(900); pg.click('#spaceSeg button[data-v="normal"]'); pg.wait_for_timeout(900)
+        ok('Vue rapide conservée (vue, espacement, légende)', pg.input_value('#preset') == 'mfa' and nb() == base, f"{pg.input_value('#preset')} {nb()}/{base}")
         pg.click('#fbReset'); pg.wait_for_timeout(600); ok('Tout réinitialiser', not pg.is_visible('#filtBar'))
         pg.fill('#q', 'Thomas Genoud'); pg.press('#q', 'Enter'); pg.wait_for_timeout(700)
         ok('Panneau de détails en onglets', len(pg.query_selector_all('.d-tabs button')) >= 3)

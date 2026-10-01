@@ -418,7 +418,7 @@ function readFiles(list){
   const all=[...list], json=all.filter(f=>/\.json$/i.test(f.name)), csv=all.filter(f=>!/\.json$/i.test(f.name));
   Promise.all(json.map(f=>f.text().then(t=>{ const m=importProfileText(t); if(!csv.length) setMsg(m,!/chargé/.test(m)); }))).then(()=>{
     if(!csv.length) return;
-    Promise.all(csv.map(f=>f.text().then(t=>addFile(f.name,t)))).then(()=>{selected=null;hiddenCats=new Set();autoFlat=true;afterLoad();});
+    Promise.all(csv.map(f=>f.text().then(t=>addFile(f.name,t)))).then(()=>{clearViewState();autoFlat=true;afterLoad();});
   });
 }
 // Exports de partages et de sites (format fixe d'Export-MapToolsPartages.ps1)
@@ -640,7 +640,7 @@ function renderLegend(){
   $('legend').innerHTML=h;
   $('legend').querySelectorAll('button[data-cat]').forEach(b=>b.onclick=()=>{
     const c=b.dataset.cat; hiddenCats.has(c)?hiddenCats.delete(c):hiddenCats.add(c);
-    b.setAttribute('aria-pressed',!hiddenCats.has(c)); custom(); render(); save();
+    b.setAttribute('aria-pressed',!hiddenCats.has(c)); render(); save();
   });
 }
 
@@ -951,7 +951,6 @@ function bindPath(n){
   const cl=$('paClear'); if(cl) cl.onclick=()=>{ clearPath(); showDetails(n); };
 }
 function select(n,rerender,view){
-  custom();
   if(pathState&&!pathState.nodes.has(n)) pathState=null;
   selected=n; showDetails(n);
   view=view||'focus';
@@ -1901,7 +1900,8 @@ function openExports(preset,prefill){
   $('xPresets').innerHTML=X_PRESETS.map(([id,l,ok])=>`<button data-p="${id}"${ok(xCtx)?'':' disabled title="Donnée absente de l\'export"'}>${esc(l)}</button>`).join('');
   $('xPresets').querySelectorAll('button').forEach(b=>b.onclick=()=>{ const p=X_PRESETS.find(x=>x[0]===b.dataset.p); p[3](); XF.title=p[1]; xPresetMark(p[0]); xRender(false); });
   if(preset){ const p=X_PRESETS.find(x=>x[0]===preset); p[3](); if(prefill) Object.assign(XF,prefill); if(XF.person) XF.person=String(XF.person).toLowerCase(); XF.title=p[1]; xPresetMark(preset); }
-  else { xReset('user'); xPresetMark(''); }
+  else if(!XF.cols||XF._g!==graph){ xReset('user'); xPresetMark(''); }   // sinon : on retrouve la dernière liste réglée
+  XF._g=graph;
   $('exports').hidden=false; xRender(false);
 }
 function xFileLabel(){ const X=xCtx, f=XF; let s=f.title||'Liste';
@@ -2253,17 +2253,17 @@ function setUsersMode(v){
   $('usersMode').value=v;
   $('usersSeg').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',b.dataset.v===v);b.setAttribute('aria-pressed',b.dataset.v===v);});
 }
-$('usersSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{custom();setUsersMode(b.dataset.v);if(graph){render();save();}});
-$('lHier').onclick=()=>{custom();setLayout('hier');render();save();};
-$('lFree').onclick=()=>{custom();setLayout('free');render();save();};
+$('usersSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{setUsersMode(b.dataset.v);if(graph){render();save();}});
+$('lHier').onclick=()=>{ if(layout==='hier') return; setLayout('hier'); render({view:'fit'}); save(); };
+$('lFree').onclick=()=>{ if(layout==='free') return; setLayout('free'); render({view:'fit'}); save(); };
 $('fit').onclick=()=>fitView(true);
 $('usersMode').onchange=()=>{if(graph){render();save();}};
-$('focusMode').onchange=()=>{custom();if(graph){render({view:'fit'});save();}};
+$('focusMode').onchange=()=>{if(graph){render({view:'fit'});save();}};
 $('depthSel').onchange=()=>{ if(graph){ render({view:'fit'}); save(); } };
-$('flatSw').onchange=()=>{ custom(); if(graph){ render({view:'fit'}); save(); } };
+$('flatSw').onchange=()=>{ if(graph){ render({view:'fit'}); save(); } };
 function setSpacing(v){ spacing=SPACING[v]?v:'normal'; $('spaceSeg').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===spacing)); }
 $('spaceSeg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ setSpacing(b.dataset.v); if(graph){ render({rebuild:true,view:'fit'}); save(); } });
-$('showIso').onchange=()=>{custom();graph&&apply();};
+$('showIso').onchange=()=>{ graph&&apply(); };
 
 /* ============ Vues rapides ============ */
 // Chaque vue applique un ensemble de réglages en un clic. Tout réglage manuel ensuite repasse en « Personnalisée ».
@@ -2274,7 +2274,7 @@ const PRESET_HINT={
   roles:'Rôles d\'administration Entra et tous les comptes qui en héritent, directement ou par groupe. Pointillés : attribution éligible.',
   off:'Comptes désactivés qui gardent des appartenances.',
   priv:'Qui hérite des droits d\'un groupe sensible, et avec quel statut. ◀ ▶ pour changer de groupe.',
-  iso:'Groupes sans aucun lien, en colonne à gauche : candidats à la suppression.',
+  iso:'Groupes sans aucun lien (en colonne à gauche en arborescence) : candidats à la suppression.',
   guests:'Comptes invités et les groupes qui les contiennent directement (équipes, sites, accès).',
   extshare:'Invités ayant reçu au moins un partage SharePoint ou OneDrive, avec leurs groupes.',
   lic:'Comptes inactifs, jamais connectés ou désactivés qui consomment encore une licence.',
@@ -2311,6 +2311,11 @@ function presetFilter(v){
 const USER_PRESETS=new Set(['mfa','guests','extshare','lic','svc','admins']);
 let presetBusy=false, privList=[], privIdx=0;
 let filtLabel='';
+function clearViewState(){
+  presetBusy=false; $('preset').value=''; $('presetHint').textContent=''; $('privNav').hidden=true; $('presetBar').hidden=true;
+  nodeFilter=null; filtLabel=''; pathState=null; selected=null; hiddenCats=new Set();
+  $('depthSel').value='0'; setUsersMode('sel'); $('focusMode').checked=false; $('showIso').checked=false; $('detailsBox').hidden=true;
+}
 function custom(){ if(presetBusy) return; $('preset').value=''; $('presetHint').textContent=''; $('privNav').hidden=true; $('presetBar').hidden=true; nodeFilter=null; filtLabel=''; }
 function userCats(test){ return graph?[...graph.catCount.user.keys()].filter(c=>test(statusKey(c))):[]; }
 function sensitiveList(){
@@ -2333,7 +2338,6 @@ function applyPreset(v){
   $('showIso').checked=(v==='iso');
   $('flatSw').checked=(v!=='structure');
   $('focusMode').checked=(v==='priv');
-  setLayout('hier');
   hiddenCats=new Set(v==='todo'?userCats(s=>s==='ok'||s==='new'):v==='off'?userCats(s=>s!=='off'):[]);
   setUsersMode(v==='todo'||v==='off'||v==='roles'||USER_PRESETS.has(v)?'all':v==='priv'?'sel':'none');
   const pf=presetFilter(v); nodeFilter=pf?pf.filter:null;
@@ -2351,6 +2355,16 @@ function applyPreset(v){
   } else render({view:'fit'});
   $('presetHint').textContent=PRESET_HINT[v]||''; $('presetBar').hidden=!PRESET_HINT[v];
   presetBusy=false; save();
+}
+// Restaure le filtre d'une vue rapide sans écraser les ajustements mémorisés (niveaux, légende, interrupteurs…)
+function restorePreset(v,idx){
+  if(!graph||!$('preset').querySelector(`option[value="${v}"]`)) return;
+  presetBusy=true; $('preset').value=v;
+  const pf=presetFilter(v); nodeFilter=pf?pf.filter:null;
+  if(v==='priv'){ privList=sensitiveList(); privIdx=Math.min(idx,Math.max(0,privList.length-1)); $('privNav').hidden=!privList.length;
+    if(privList.length) $('privName').textContent=`${graph.label.get(privList[privIdx])} (${privIdx+1}/${privList.length})`; }
+  $('presetHint').textContent=PRESET_HINT[v]||''; $('presetBar').hidden=!PRESET_HINT[v];
+  presetBusy=false; render({view:'fit'});
 }
 $('preset').onchange=()=>applyPreset($('preset').value);
 $('privPrev').onclick=()=>{ if(privList.length){privIdx=(privIdx-1+privList.length)%privList.length;showPriv();} };
@@ -2372,7 +2386,7 @@ function confirmAction(title,text,okLabel,danger){
 }
 function fileNames(){return files.map(f=>f.name).join(', ');}
 function resetAll(){
-  files=[];graph=null;selected=null;hiddenCats=new Set();if(network){network.destroy();network=null;}
+  files=[];graph=null;clearViewState();if(network){network.destroy();network=null;}
   renderCards();setMsg('',false);['statsBox','ctrlBox','hint','zoomBox','legendBox','detailsBox','banner','topCtrls','presetBar'].forEach(i=>$(i).hidden=true);$('empty').hidden=false;
   ['reportBtn','exportsBtn','png'].forEach(i=>$(i).disabled=true); $('secData').open=true; $('dataSum').textContent='';
   dbDelete();
@@ -2404,12 +2418,12 @@ document.addEventListener('click',e=>{ if(!e.target.closest('#toolsMenu')) $('to
 $('statsBox').querySelectorAll('[data-act]').forEach(el=>{ el.classList.add('clk'); el.tabIndex=0;
   const go=()=>{ if(!graph) return; const a=el.dataset.act;
     if(a==='reset') resetView();
-    else if(a==='users'){ custom(); setUsersMode('all'); render({view:'fit'}); save(); }
+    else if(a==='users'){ setUsersMode('all'); render({view:'fit'}); save(); }
     else if(a==='roles'||a==='loops'){ $('preset').value=a; applyPreset(a); }
     else if(a==='missing'){ custom(); setUsersMode('all'); nodeFilter=n=>graph.catOf(n)==='Absent des attributs'; filtLabel='éléments absents des attributs'; render({view:'fit'}); }
   };
   el.onclick=go; el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(); } }; });
-$('detClose').onclick=()=>{ $('detailsBox').hidden=true; selected=null; if(network){ network.unselectAll(); if(graph&&($('usersMode').value==='sel'||$('focusMode').checked)) render({view:'keep'}); } save(); };
+$('detClose').onclick=()=>{ $('detailsBox').hidden=true; };   // ferme le panneau sans toucher à la carte ni à la sélection
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>graph&&render({rebuild:true}));
 
 /* ============ Mémorisation (IndexedDB, locale au navigateur) ============ */
@@ -2436,7 +2450,7 @@ function save(){
   saveTimer=setTimeout(()=>{
     const state={v:3,savedAt:new Date().toISOString(),
       files:files.map(f=>({name:f.name,text:f.text,role:f.role,map:f.map})),
-      ui:{layout,frozen,spacing,depth:$('depthSel').value,flat:$('flatSw').checked,selected,focus:$('focusMode').checked,showIso:$('showIso').checked,usersMode:$('usersMode').value,hiddenCats:[...hiddenCats]}};
+      ui:{layout,frozen,spacing,preset:$('preset').value,privIdx,depth:$('depthSel').value,flat:$('flatSw').checked,selected,focus:$('focusMode').checked,showIso:$('showIso').checked,usersMode:$('usersMode').value,hiddenCats:[...hiddenCats]}};
     dbOp('readwrite',st=>st.put(state,DB_KEY)).catch(e=>setMsg('Mémorisation impossible dans ce navigateur : '+(e&&e.message||e),true));
   },250);
 }
@@ -2462,6 +2476,7 @@ function restore(){
     renderCards();
     if(files.some(f=>f.role==='links')){
       apply();
+      if(u.preset) restorePreset(u.preset,u.privIdx||0);
       const d=new Date(state.savedAt);
       setMsg(`Données restaurées (enregistrées le ${d.toLocaleDateString('fr-CH')} à ${d.toLocaleTimeString('fr-CH',{hour:'2-digit',minute:'2-digit'})}).`,false);
     }
@@ -2472,7 +2487,7 @@ function restore(){
 __DEMO__
 $('demo').onclick=async()=>{
   if(files.length&&!await confirmAction('Charger l\'exemple ?',`Les données d'exemple remplaceront les fichiers chargés (${fileNames()}). Il faudra les redéposer pour les retrouver.`,'Charger l\'exemple',false)) return;
-  files=[]; selected=null; hiddenCats=new Set();
+  files=[]; clearViewState();
   addFile('Exemple_MapTools_Liens.csv',DEMO_LIENS); addFile('Exemple_MapTools_Attributs.csv',DEMO_ATTR);
   addFile('Exemple_MapTools_Partages.csv',DEMO_PARTAGES); addFile('Exemple_MapTools_Sites.csv',DEMO_SITES); autoFlat=true; afterLoad();
 };

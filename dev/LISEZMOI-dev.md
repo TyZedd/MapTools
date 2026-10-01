@@ -29,7 +29,7 @@ python -m playwright install chromium
 python dev/tests/test_interface.py
 ```
 
-Charge l'exemple et vérifie la carte, les 13 vues rapides, la réinitialisation des filtres, les onglets de détails, le chemin d'héritage, le rapport et ses parties, l'acceptation d'un risque, le plan d'action CSV, les listes d'export, l'avant / après, la restauration après rafraîchissement et l'effacement. Code de sortie 1 en cas d'échec.
+Charge l'exemple et vérifie la carte, les 13 vues rapides, leur conservation quand on change de vue, d'espacement ou de légende, la réinitialisation des filtres, les onglets de détails, le chemin d'héritage, le rapport et ses parties, l'acceptation d'un risque, le plan d'action CSV, les listes d'export, l'avant / après, la restauration après rafraîchissement et l'effacement. Code de sortie 1 en cas d'échec.
 
 **Scripts PowerShell** (PowerShell 7, sans tenant) :
 

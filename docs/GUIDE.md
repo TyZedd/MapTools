@@ -157,7 +157,7 @@ La barre du bas indique le nombre de groupes reliés, de liens d'imbrication, d'
 - **Carte** au centre ; la description de la vue rapide active s'affiche en haut de la carte, avec les boutons ◀ ▶ pour la vue « Périmètre d'un groupe à privilèges ».
 - **Bandeau des filtres actifs**, en haut à gauche de la carte : vue rapide, chemin, niveaux, mode utilisateurs, catégories masquées, branche isolée… Le bouton **Tout réinitialiser** revient à l'affichage par défaut. Si un élément attendu n'apparaît pas, c'est là qu'on comprend pourquoi.
 - **Infobulles** : le survol d'un élément affiche l'essentiel (statut, profil, dernière connexion, MFA, nombre de groupes ou de membres, propriétaires) sans cliquer.
-- **Panneau de détails** à droite, ouvert à la sélection d'un élément et fermé par le bouton ×.
+- **Panneau de détails** à droite, ouvert à la sélection d'un élément et fermé par le bouton × (la carte et la sélection ne changent pas).
 - **Barre du bas** : les chiffres clés (groupes, liens, utilisateurs, appartenances, rôles, racines, niveaux, boucles) et la source reconnue. Certaines pastilles sont cliquables : groupes (tout réinitialiser), utilisateurs (les afficher tous), rôles (vue des rôles), boucles (les isoler), absents des attributs (les afficher).
 
 ### Sélection et détails
@@ -177,7 +177,7 @@ La liste **Vue rapide** applique en un clic un ensemble de réglages adaptés à
 
 | Vue rapide | Question traitée | Réglages appliqués |
 |---|---|---|
-| **Structure des groupes** | Comment les groupes s'imbriquent-ils ? Y a-t-il des boucles, des niveaux trop profonds ? | Arborescence, utilisateurs et groupes sans imbrication masqués, toute la légende visible |
+| **Structure des groupes** | Comment les groupes s'imbriquent-ils ? Y a-t-il des boucles, des niveaux trop profonds ? | Utilisateurs et groupes sans imbrication masqués, toute la légende visible |
 | **Comptes à traiter** | Où se trouvent les comptes dormants dans la structure ? | Tous les utilisateurs, statuts Actif et Nouveau masqués |
 | **Désactivés encore membres** | Quels comptes désactivés gardent des appartenances ? | Tous les utilisateurs, seul le statut Désactivé visible |
 | **Périmètre d'un groupe à privilèges** | Qui hérite des droits d'un groupe sensible, directement ou par imbrication, et avec quel statut ? | Premier groupe sensible sélectionné, branche isolée avec tous ses utilisateurs ; les boutons ◀ ▶ passent au groupe sensible suivant |
@@ -190,9 +190,9 @@ La liste **Vue rapide** applique en un clic un ensemble de réglages adaptés à
 | **Comptes d'administration** | Qui a des droits élevés ? | Profil admin, rôle Entra, compte protégé ou membre d'un groupe sensible, avec leurs groupes |
 | **Groupes Microsoft 365 sans propriétaire** | Quelles équipes ne sont gérées par personne ? | Groupes M365 dont le nombre de propriétaires est nul |
 | **Boucles d'imbrication** | Quels groupes se contiennent eux-mêmes ? | Uniquement les groupes pris dans une boucle |
-| **Groupes isolés et vides** | Quels groupes n'ont aucun lien ? | Utilisateurs masqués, éléments sans lien affichés : les groupes isolés apparaissent en colonne à gauche, sans flèche |
+| **Groupes isolés et vides** | Quels groupes n'ont aucun lien ? | Utilisateurs masqués, éléments sans lien affichés : en arborescence, les groupes isolés apparaissent en colonne à gauche, sans flèche |
 
-Les vues « Comptes à traiter » et « Désactivés encore membres » sont aussi parlantes en vue Réseau : les groupes qui concentrent des comptes à traiter ressortent. Les groupes sensibles sont détectés comme dans le rapport (section 6). Les vues qui demandent une donnée absente de l'export (rôles, MFA, licences, profils, propriétaires, partages, boucles) sont grisées. Une vue rapide repart toujours de « Niveaux : tous » et efface un éventuel chemin affiché.
+Les vues « Comptes à traiter » et « Désactivés encore membres » sont aussi parlantes en vue Réseau : les groupes qui concentrent des comptes à traiter ressortent. Les groupes sensibles sont détectés comme dans le rapport (section 6). Les vues qui demandent une donnée absente de l'export (rôles, MFA, licences, profils, propriétaires, partages, boucles) sont grisées. Une vue rapide repart toujours de « Niveaux : tous » et efface un éventuel chemin affiché. Elle garde la disposition en cours : passer d'Arborescence à Réseau (ou l'inverse) ne change ni la vue rapide ni les filtres. Les réglages faits ensuite (niveaux, espacement, légende, utilisateurs, interrupteurs, sélection d'un élément) s'ajoutent à la vue rapide sans l'annuler : le bandeau des filtres les affiche ensemble, et seuls le choix d'une autre vue, « Personnalisée » ou **Tout réinitialiser** la retirent. La vue rapide et ses ajustements sont mémorisés avec les données ; un nouveau chargement de fichiers repart d'un affichage par défaut.
 
 ### Pourquoi a-t-il accès ?
 
